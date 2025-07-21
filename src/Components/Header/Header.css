@@ -1,0 +1,11 @@
+/* styles.css */
+.nav-link {
+  color: #333 !important;
+  transition: color 0.3s;
+}
+
+.nav-link.active {
+  color: #e91e63 !important;
+  border-bottom: 2px solid #e91e63;
+  font-weight: bold;
+}
