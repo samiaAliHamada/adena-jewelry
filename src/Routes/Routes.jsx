@@ -3,10 +3,15 @@ import MainLayout from "../MainLayout/MainLayout";
 import Error from "../Pages/Error/Error";
 import Home from "../Pages/Home/Home";
 import About from "../Pages/About/About";
+import Contact from "../Pages/Contact/Contact";
 import Login from "../Pages/Login/Login";
+import Register from "../Pages/Register/Register";
 import Profile from "../Pages/Profile/Profile";
 import Shop from "../Pages/Shop/Shop";
 import SingleProduct from "../Pages/SingleProduct/SingleProduct";
+import SizeGuide from "../Pages/SizeGuide/SizeGuide";
+import WishList from "../Pages/WishList/WishList";
+import Cart from "../Pages/Cart/Cart";
 
 const router = createBrowserRouter([
   {
@@ -19,12 +24,20 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "/about",
-        element: <About />,
+        path: "/register",
+        element: <Register />,
       },
       {
         path: "/login",
         element: <Login />,
+      },
+      {
+        path: "/about",
+        element: <About />,
+      },
+      {
+        path: "/contact",
+        element: <Contact />,
       },
       {
         path: "/profile",
@@ -37,6 +50,18 @@ const router = createBrowserRouter([
       {
         path: "/singleproduct/:id",
         element: <SingleProduct />,
+      },
+      {
+        path: "/sizeGuide",
+        element: <SizeGuide />,
+      },
+      {
+        path: "/wishlist",
+        element: <WishList />,
+      },
+      {
+        path: "/cart",
+        element: <Cart />,
       },
     ],
   },

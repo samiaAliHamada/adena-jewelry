@@ -1,0 +1,26 @@
+.social_icons a {
+  width: 35px;
+  height: 35px;
+  background-color: #1c1c1c;
+  transition: background 0.3s ease;
+}
+.social_icons a:hover {
+  background-color: #bfa67a;
+  color: #000;
+}
+.footer_email::placeholder {
+  color: #ccc !important;
+  font-size: 0.9rem;
+}
+.signup_btn {
+  background-color: #bfa67a !important;
+  color: #000;
+  transition: all 0.3s ease;
+}
+.signup_btn:hover {
+  background-color: #bdaf96d4 !important;
+  color: #000 !important;
+}
+footer .container-fluid > .d-flex {
+  border-top: 1px solid #333;
+}

@@ -1,11 +1,14 @@
-/* styles.css */
-.nav-link {
-  color: #333 !important;
-  transition: color 0.3s;
+.brand_logo {
+  max-width: 80px;
+  height: 40px;
+  object-fit: contain;
 }
-
+.nav-link {
+  color: #222;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+.nav-link:hover,
 .nav-link.active {
-  color: #e91e63 !important;
-  border-bottom: 2px solid #e91e63;
-  font-weight: bold;
+  color: #bfa67a !important;
 }

@@ -1,0 +1,15 @@
+.signup_page input:focus {
+  box-shadow: none;
+  border-color: #bfa67a;
+}
+.signup_page label {
+  font-weight: 500;
+}
+.signin_btn {
+  transition: all 0.3s ease-in-out;
+}
+.signin_btn:hover {
+  background-color: #bfa67a !important;
+  border-color: #bfa67a !important;
+  color: #fff important;
+}

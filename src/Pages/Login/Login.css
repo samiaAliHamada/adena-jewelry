@@ -1,0 +1,21 @@
+.login_page input:focus {
+  border-color: #bfa67a;
+  box-shadow: none;
+  outline: none;
+}
+
+.login_page input::placeholder {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.login_page .alert-success {
+  border-color: #bfa67a;
+  color: #000;
+  background-color: #fdf9f2;
+  font-weight: 500;
+}
+
+.login_page form {
+  max-width: 500px;
+}

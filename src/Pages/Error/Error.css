@@ -1,0 +1,21 @@
+.error_msg {
+  min-height: 100vh;
+}
+.error_msg img {
+  max-width: 400px;
+}
+.error_msg h1 {
+  font-size: 40px;
+}
+.error_msg h1::after {
+  content: "";
+  position: absolute;
+  width: 150px;
+  height: 2px;
+  background-color: #e1e1e1;
+  bottom: 0;
+  left: calc(50% - 70px);
+}
+.error_msg p {
+  max-width: 400px;
+}

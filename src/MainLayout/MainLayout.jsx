@@ -6,8 +6,10 @@ export default function MainLayout() {
   return (
     <>
       <Header />
-      <Outlet />
-      <Footer />
+      <div className="min-vh-100 d-flex flex-column">
+        <Outlet />
+        <Footer />
+      </div>
     </>
   );
 }

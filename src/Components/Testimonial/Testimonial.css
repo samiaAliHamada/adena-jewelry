@@ -1,0 +1,20 @@
+.review_img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border: 2px solid #bfa67a61;
+}
+.swiper-pagination-bullet {
+  background-color: #bfa67a;
+  opacity: 0.6;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  transition: 0.3s ease;
+}
+.swiper-pagination-bullet-active {
+  background-color: #bfa67a;
+  border: 1px solid #897350b4;
+  opacity: 1;
+  transform: scale(1.2);
+}
