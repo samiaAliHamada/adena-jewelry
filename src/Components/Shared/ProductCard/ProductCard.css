@@ -3,3 +3,30 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.icon_overlay {
+  background-color: #a9a1a160;
+  inset: 0;
+  gap: 10px;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s ease-in-out;
+}
+.product_card:hover .icon_overlay {
+  opacity: 1;
+  visibility: visible;
+}
+.icon {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #fff !important;
+}
+.view_btn {
+  bottom: 0;
+  transition: 0.3s ease-in-out;
+}
+.view_btn:hover {
+  background-color: #4c381ee2 !important;
+}
+.product_card .icon.active {
+  color: rgb(146, 2, 2);
+}
