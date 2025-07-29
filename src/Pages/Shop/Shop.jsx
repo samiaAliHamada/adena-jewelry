@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import ProductCard from "../../Components/ProductCard/ProductCard";
+import ProductCard from "../../Components/Shared/ProductCard/ProductCard";
 
 export default function Shop() {
   const [products, setProducts] = useState([]);
-  console.log(products);
 
   useEffect(() => {
     fetch("https://dummyjson.com/products")

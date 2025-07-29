@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import "./ProductCard.css";
+
 export default function ProductCard({ product }) {
   return (
     <div className="card p-4">

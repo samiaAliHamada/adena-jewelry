@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { FaRegHeart, FaRegUser } from "react-icons/fa6";
 import { SlBag } from "react-icons/sl";
@@ -5,9 +6,26 @@ import { SlBag } from "react-icons/sl";
 import "./Header.css";
 
 export default function Header() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <header>
-      <nav className="navbar navbar-expand-lg bg-white shadow-sm">
+    <header className="fixed-top">
+      <nav
+        className={`navbar navbar-expand-lg ${
+          isScrolled ? "bg-white shadow-sm" : "bg-transparent"
+        }`}
+      >
         <div className="container-fluid align-items-center">
           <button
             className="navbar-toggler border-0"
