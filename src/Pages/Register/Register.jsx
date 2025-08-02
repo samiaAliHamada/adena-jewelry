@@ -75,8 +75,8 @@ export default function Register() {
   };
 
   return (
-    <div className="signup_page container my-5">
-      <h2 className="text-center mb-4">Create Account</h2>
+    <div className="signup_page container my-5 py-5">
+      <h2 className="text-center my-4">Create Account</h2>
       <form
         onSubmit={handleSubmit}
         className="w-100 mx-auto"

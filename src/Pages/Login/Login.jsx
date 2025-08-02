@@ -52,8 +52,8 @@ export default function Login() {
   };
 
   return (
-    <div className="login_page container my-5">
-      <h2 className="text-center mb-4">Account</h2>
+    <div className="login_page container my-5 py-5">
+      <h2 className="text-center my-4">Account</h2>
       <div className="row align-items-center g-5">
         <div className="col-md-6">
           <form onSubmit={handleSubmit} className="w-100 mx-auto py-5">
