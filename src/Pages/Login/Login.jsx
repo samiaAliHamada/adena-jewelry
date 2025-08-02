@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase";
+import { showLoginSuccess } from "../../ToastMessages";
 
 import "./Login.css";
 
@@ -17,7 +20,7 @@ export default function Login() {
     setSubmitted(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
@@ -31,10 +34,20 @@ export default function Login() {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
-      console.log("Login submitted", formData);
-      setSubmitted(true);
-      setFormData({ email: "", password: "" });
-      navigate("/");
+      try {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          formData.email,
+          formData.password
+        );
+
+        showLoginSuccess(userCredential.user.displayName || "User");
+        setFormData({ email: "", password: "" });
+        navigate("/");
+      } catch (error) {
+        console.error("Login error:", error.message);
+        setErrors({ firebase: error.message });
+      }
     }
   };
 
@@ -45,6 +58,7 @@ export default function Login() {
         <div className="col-md-6">
           <form onSubmit={handleSubmit} className="w-100 mx-auto py-5">
             <h4 className="mb-2">Sign in</h4>
+
             <div className="mb-3">
               <input
                 type="email"
@@ -58,6 +72,7 @@ export default function Login() {
                 <small className="text-danger">{errors.email}</small>
               )}
             </div>
+
             <div className="mb-3">
               <div className="position-relative">
                 <input
@@ -81,19 +96,26 @@ export default function Login() {
                 <small className="text-danger">{errors.password}</small>
               )}
             </div>
+
+            {errors.firebase && (
+              <div className="alert alert-danger mt-2">{errors.firebase}</div>
+            )}
+
+            {submitted && (
+              <div className="alert alert-success mt-3">
+                Logged in successfully!
+              </div>
+            )}
+
             <button
               className="btn bg-black text-white rounded-0 w-100"
               type="submit"
             >
               Sign In
             </button>
-            {submitted && Object.keys(errors).length === 0 && (
-              <div className="alert alert-success mt-3">
-                Logged in successfully!
-              </div>
-            )}
           </form>
         </div>
+
         <div className="col-md-6">
           <div className="d-flex flex-column gap-3">
             <h4>New customer?</h4>

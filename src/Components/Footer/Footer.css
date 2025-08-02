@@ -24,3 +24,7 @@
 footer .container-fluid > .d-flex {
   border-top: 1px solid #333;
 }
+
+body {
+  font-family: "Playfair Display", serif;
+}

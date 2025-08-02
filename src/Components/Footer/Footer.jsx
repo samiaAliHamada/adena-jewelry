@@ -6,7 +6,7 @@ import "./Footer.css";
 
 export default function Footer() {
   return (
-    <footer className="py-4 bg-black text-white text-center mt-auto">
+    <footer className="py-4 bg-black text-white text-center mt-5">
       <div className="container-fluid">
         <div className="row g-4 py-4">
           <div className="col-md-3 col-sm-6">

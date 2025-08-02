@@ -1,5 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { updateProfile } from "firebase/auth";
+import { showRegisterSuccess } from "../../ToastMessages";
+
+import { auth } from "../../firebase";
 import "./Register.css";
 
 export default function Register() {
@@ -21,6 +26,35 @@ export default function Register() {
     setSubmitted(false);
   };
 
+  const handleRegister = async (email, password) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      await updateProfile(userCredential.user, {
+        displayName: formData.name,
+      });
+
+      showRegisterSuccess(formData.name);
+
+      console.log("Registered user:", userCredential.user);
+      setSubmitted(true);
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+      navigate("/");
+    } catch (error) {
+      console.error("Registration error:", error.message);
+      setErrors({ firebase: error.message });
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const newErrors = {};
@@ -36,16 +70,10 @@ export default function Register() {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
-      console.log("Form Submitted", formData);
-      setSubmitted(true);
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
+      handleRegister(formData.email, formData.password);
     }
   };
+
   return (
     <div className="signup_page container my-5">
       <h2 className="text-center mb-4">Create Account</h2>
@@ -107,6 +135,17 @@ export default function Register() {
             <small className="text-danger">{errors.confirmPassword}</small>
           )}
         </div>
+
+        {errors.firebase && (
+          <div className="alert alert-danger mt-2">{errors.firebase}</div>
+        )}
+
+        {submitted && (
+          <div className="alert alert-success mt-3">
+            Account created successfully!
+          </div>
+        )}
+
         <div className="d-grid gap-2">
           <button className="btn btn-dark rounded-0 w-100" type="submit">
             Register
@@ -119,12 +158,6 @@ export default function Register() {
             Sign in
           </button>
         </div>
-
-        {submitted && (
-          <div className="alert alert-success mt-3">
-            Account created successfully!
-          </div>
-        )}
       </form>
     </div>
   );

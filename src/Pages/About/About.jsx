@@ -12,6 +12,7 @@ export default function About() {
         image="/bg-breadcrumb.png"
         breadcrumb={[{ label: "Home", link: "/" }, { label: "About Us" }]}
       />
+
       <div className="container-fluid py-5">
         <div className="row align-items-center">
           <div className="col-md-6">
@@ -56,9 +57,7 @@ export default function About() {
           </div>
         </div>
       </div>
-      <div className="container-fluid">
-        <Testimonial />
-      </div>
+      <Testimonial />
       <InstaSection />
     </>
   );

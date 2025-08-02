@@ -5,6 +5,7 @@ import NewsletterPopup from "../../Components/NewsletterPopup/NewsletterPopup";
 import HeroSection from "../../Components/HeroSection/HeroSection";
 import InstaSection from "../../Components/Shared/InstaSection/InstaSection.jsx";
 import ProductCard from "../../Components/Shared/ProductCard/ProductCard";
+import Testimonial from "../../Components/Testimonial/Testimonial";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -44,6 +45,8 @@ export default function Home() {
           </div>
         )}
       </div>
+      <Testimonial />
+
       <InstaSection />
     </>
   );

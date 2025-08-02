@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase";
+import Breadcrumb from "../../Components/Shared/Breadcrumb/Breadcrumb";
 
 export default function SingleProduct() {
   const { id } = useParams();
@@ -9,12 +12,17 @@ export default function SingleProduct() {
   useEffect(() => {
     const getProduct = async () => {
       try {
-        const response = await fetch(`https://dummyjson.com/products/${id}`);
-        const data = await response.json();
-        setProduct(data);
-        setLoading(false);
+        const docRef = doc(db, "products", id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setProduct({ id: docSnap.id, ...docSnap.data() });
+        } else {
+          console.log("No such document!");
+        }
       } catch (error) {
         console.error("Error fetching product:", error);
+      } finally {
         setLoading(false);
       }
     };
@@ -28,7 +36,16 @@ export default function SingleProduct() {
 
   return (
     <div className="container py-5">
-      <div className="row g-4 align-items-center">
+      <Breadcrumb
+        title={product.title}
+        breadcrumb={[
+          { label: "Home", link: "/" },
+          { label: "Products", link: "/products" },
+          { label: product.title },
+        ]}
+      />
+
+      <div className="row g-4 align-items-center my-5 py-5">
         <div className="col-md-6 text-center">
           <img
             src={product.thumbnail}

@@ -24,7 +24,7 @@ export default function HeroSwiper({ slides }) {
               <p>{slide.subtitle}</p>
               <Link
                 to="/shop"
-                className="btn text-white border rounded-0 px-3 py-2 mt-3"
+                className="shop-btn btn text-white border rounded-0 px-3 py-2 mt-3"
               >
                 Shop Now
               </Link>

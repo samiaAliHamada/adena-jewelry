@@ -5,7 +5,7 @@
   border: 2px solid #bfa67a61;
 }
 .swiper-pagination-bullet {
-  background-color: #bfa67a;
+  background-color: #bfa67a !important;
   opacity: 0.6;
   width: 14px;
   height: 14px;

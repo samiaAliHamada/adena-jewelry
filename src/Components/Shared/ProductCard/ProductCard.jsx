@@ -1,12 +1,40 @@
 import { Link } from "react-router-dom";
 import { FaRegHeart, FaRegUser } from "react-icons/fa6";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  showAddedToWishlist,
+  showRemovedFromWishlist,
+} from "..//../../ToastMessages.js";
 import "./ProductCard.css";
-import SingleProduct from "../../../Pages/SingleProduct/SingleProduct";
-// ProductCard.jsx
+
 export default function ProductCard({ product }) {
   const [liked, setLiked] = useState(false);
   const [inCart, setInCart] = useState(false);
+
+  useEffect(() => {
+    const existing = JSON.parse(localStorage.getItem("wishlist")) || [];
+    const isLiked = existing.some((item) => item.id === product.id);
+    setLiked(isLiked);
+  }, [product.id]);
+
+  const handleAddToWishlist = (product) => {
+    const existing = JSON.parse(localStorage.getItem("wishlist")) || [];
+    const alreadyAdded = existing.find((item) => item.id === product.id);
+
+    let updated;
+    if (!alreadyAdded) {
+      updated = [...existing, product];
+      localStorage.setItem("wishlist", JSON.stringify(updated));
+      setLiked(true);
+      showAddedToWishlist(product);
+    } else {
+      updated = existing.filter((item) => item.id !== product.id);
+      localStorage.setItem("wishlist", JSON.stringify(updated));
+      setLiked(false);
+      showRemovedFromWishlist(product);
+    }
+  };
+
   return (
     <div className="product_card card h-100 position-relative">
       <div className="position-relative">
@@ -22,7 +50,8 @@ export default function ProductCard({ product }) {
               <FaRegHeart
                 size={20}
                 className={`icon ${liked ? "active" : ""} bg-white`}
-                onClick={() => setLiked(!liked)}
+                onClick={() => handleAddToWishlist(product)}
+                style={{ cursor: "pointer" }}
               />
             </div>
             <div className="p-2 bg-light rounded-circle">
@@ -30,13 +59,14 @@ export default function ProductCard({ product }) {
                 size={20}
                 className={`icon ${inCart ? "active" : ""}`}
                 onClick={() => setInCart(!inCart)}
+                style={{ cursor: "pointer" }}
               />
             </div>
           </div>
           <div className="d-flex align-items-center justify-content-center">
             <div className="view_btn position-absolute btn rounded-0 w-100 bg-black">
               <Link
-                to={"/SingleProduct"}
+                to={`/singleproduct/${product.id}`}
                 className="text-white text-decoration-none"
               >
                 Quick View
@@ -47,8 +77,8 @@ export default function ProductCard({ product }) {
       </div>
 
       <div className="card-body">
-        <h5 className="card-title">{product.title}</h5>
-        <p className="card-text">{product.description}</p>
+        <h6 className="card-title product_text">{product.title}</h6>
+        <p className="card-text product_text">{product.description}</p>
         <p className="card-text">
           <strong>${product.price}</strong>
         </p>

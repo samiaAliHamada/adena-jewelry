@@ -1,5 +1,5 @@
 .swiper-pagination-bullet {
-  background-color: rgba(237, 237, 237, 0.184) !important;
+  background-color: rgba(237, 237, 237, 0.173) !important;
   width: 20px !important;
   height: 20px !important;
   opacity: 1;
@@ -26,6 +26,9 @@
   bottom: 120px;
   right: 100px;
   max-width: 400px;
+}
+.shop-btn:hover {
+  background-color: #72542daf !important;
 }
 @media (max-width: 768px) {
   .hero_content h3 {

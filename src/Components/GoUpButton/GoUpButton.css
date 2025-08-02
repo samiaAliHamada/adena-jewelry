@@ -1,0 +1,10 @@
+.up_btn {
+  width: 45px;
+  height: 45px;
+  z-index: 999;
+  background-color: #63512d !important;
+  transition: opacity 0.3s ease-in-out;
+}
+.up_btn:hover {
+  background-color: #63512de4 !important;
+}

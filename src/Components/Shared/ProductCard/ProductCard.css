@@ -4,7 +4,7 @@
   text-overflow: ellipsis;
 }
 .icon_overlay {
-  background-color: #a9a1a160;
+  background-color: #a9a1a17a;
   inset: 0;
   gap: 10px;
   opacity: 0;
@@ -28,5 +28,5 @@
   background-color: #4c381ee2 !important;
 }
 .product_card .icon.active {
-  color: rgb(146, 2, 2);
+  color: rgb(188, 4, 4);
 }
