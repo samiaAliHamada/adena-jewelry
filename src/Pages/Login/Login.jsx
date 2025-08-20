@@ -1,23 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase";
 import { showLoginSuccess } from "../../ToastMessages";
+import { useAuthStore } from "../../Store/useAuthStore";
 
 import "./Login.css";
 
 export default function Login() {
   const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
+
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
-  const [submitted, setSubmitted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    setErrors({});
+  }, [formData.email, formData.password]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({});
-    setSubmitted(false);
   };
 
   const handleSubmit = async (e) => {
@@ -33,21 +35,29 @@ export default function Login() {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-    } else {
-      try {
-        const userCredential = await signInWithEmailAndPassword(
-          auth,
-          formData.email,
-          formData.password
-        );
+      return;
+    }
 
-        showLoginSuccess(userCredential.user.displayName || "User");
-        setFormData({ email: "", password: "" });
-        navigate("/");
-      } catch (error) {
-        console.error("Login error:", error.message);
-        setErrors({ firebase: error.message });
+    try {
+      const user = await login(formData.email, formData.password);
+      showLoginSuccess(user.displayName || "User");
+
+      setFormData({ email: "", password: "" });
+      navigate("/");
+    } catch (error) {
+      console.error("Login error:", error.message);
+
+      let message = "Something went wrong. Please try again.";
+
+      if (error.code === "auth/user-not-found") {
+        message = "No account found with this email.";
+      } else if (error.code === "auth/wrong-password") {
+        message = "Incorrect password. Please try again.";
+      } else if (error.code === "auth/invalid-email") {
+        message = "Invalid email address.";
       }
+
+      setErrors({ firebase: message });
     }
   };
 
@@ -99,12 +109,6 @@ export default function Login() {
 
             {errors.firebase && (
               <div className="alert alert-danger mt-2">{errors.firebase}</div>
-            )}
-
-            {submitted && (
-              <div className="alert alert-success mt-3">
-                Logged in successfully!
-              </div>
             )}
 
             <button

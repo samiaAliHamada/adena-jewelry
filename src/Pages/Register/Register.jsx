@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { updateProfile } from "firebase/auth";
 import { showRegisterSuccess } from "../../ToastMessages";
+import { useAuthStore } from "../../Store/useAuthStore";
 
-import { auth } from "../../firebase";
 import "./Register.css";
 
 export default function Register() {
   const navigate = useNavigate();
+  const register = useAuthStore((state) => state.register);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -26,36 +25,7 @@ export default function Register() {
     setSubmitted(false);
   };
 
-  const handleRegister = async (email, password) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      await updateProfile(userCredential.user, {
-        displayName: formData.name,
-      });
-
-      showRegisterSuccess(formData.name);
-
-      console.log("Registered user:", userCredential.user);
-      setSubmitted(true);
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
-      navigate("/");
-    } catch (error) {
-      console.error("Registration error:", error.message);
-      setErrors({ firebase: error.message });
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
@@ -69,8 +39,26 @@ export default function Register() {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-    } else {
-      handleRegister(formData.email, formData.password);
+      return;
+    }
+
+    try {
+      await register(formData.name, formData.email, formData.password);
+
+      showRegisterSuccess(formData.name);
+      setSubmitted(true);
+
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+
+      navigate("/");
+    } catch (error) {
+      console.error("Registration error:", error.message);
+      setErrors({ firebase: error.message });
     }
   };
 

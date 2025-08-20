@@ -1,19 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FaTrash } from "react-icons/fa";
+import { useWishlistStore } from "../../Store/WishlistStore.js";
 
 export default function WishList() {
-  const [wishlist, setWishlist] = useState([]);
+  const { wishlist, fetchWishlist, removeFromWishlist } = useWishlistStore();
 
   useEffect(() => {
-    const savedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-    setWishlist(savedWishlist);
-  }, []);
-
-  const removeFromWishlist = (id) => {
-    const updatedWishlist = wishlist.filter((item) => item.id !== id);
-    setWishlist(updatedWishlist);
-    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
-  };
+    fetchWishlist();
+  }, [fetchWishlist]);
 
   if (wishlist.length === 0) {
     return (
