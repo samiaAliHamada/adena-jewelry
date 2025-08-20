@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import "./Breadcrumb.css";
+
 export default function Breadcrumb({ title, breadcrumb }) {
   return (
     <div className="breadcrumb_container position-absolute text-white text-end bottom-0 end-0 p-5">

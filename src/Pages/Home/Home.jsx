@@ -34,6 +34,7 @@ export default function Home() {
       <NewsletterPopup />
       <div className="container py-5">
         <h1 className="text-center py-4">Top Trending</h1>
+
         {loading ? (
           <p className="text-center">Loading...</p>
         ) : (

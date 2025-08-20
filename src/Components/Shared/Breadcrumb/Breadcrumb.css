@@ -1,6 +1,4 @@
 .breadcrumb_container {
-  bottom: 30px;
-  right: 40px;
   z-index: 10;
 }
 .breadcrumb-item::before {
