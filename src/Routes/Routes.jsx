@@ -6,11 +6,9 @@ import About from "../Pages/About/About";
 import Contact from "../Pages/Contact/Contact";
 import Login from "../Pages/Login/Login";
 import Register from "../Pages/Register/Register";
-import Profile from "../Pages/Profile/Profile";
 import Shop from "../Pages/Shop/Shop";
 import SingleProduct from "../Pages/SingleProduct/SingleProduct";
 import SizeGuide from "../Pages/SizeGuide/SizeGuide";
-import Cart from "../Pages/Cart/Cart";
 import WishList from "../Pages/WishList/WishList";
 
 const router = createBrowserRouter([
@@ -40,10 +38,6 @@ const router = createBrowserRouter([
         element: <Contact />,
       },
       {
-        path: "/profile",
-        element: <Profile />,
-      },
-      {
         path: "/shop",
         element: <Shop />,
       },
@@ -58,10 +52,6 @@ const router = createBrowserRouter([
       {
         path: "/wishlist",
         element: <WishList />,
-      },
-      {
-        path: "/cart",
-        element: <Cart />,
       },
     ],
   },
