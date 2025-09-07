@@ -8,7 +8,7 @@ export default function NewsletterPopup() {
   const [email, setEmail] = useState('');
 
   useEffect(() => {
-    const alreadyShown = localStorage.getItem('newsletter_shown');
+    const alreadyShown = localStorage.getItem('newsletter_shown') === 'true';
     if (!alreadyShown) {
       setTimeout(() => {
         setShowPopup(true);
