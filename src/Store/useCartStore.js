@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import toast from "react-hot-toast";
-import { db } from "../firebase";
+import { db, auth } from "../firebase";
 import {
   collection,
   getDocs,
@@ -9,10 +9,15 @@ import {
   doc,
 } from "firebase/firestore";
 
+
+
 export const useCartStore = create((set, get) => ({
   cart: [],
 
   fetchCart: async () => {
+    if (!auth.currentUser) {
+      return
+    }
     try {
       const querySnapshot = await getDocs(collection(db, "cart"));
       const items = querySnapshot.docs.map((doc) => ({
