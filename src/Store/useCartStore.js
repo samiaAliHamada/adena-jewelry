@@ -1,79 +1,157 @@
 import { create } from "zustand";
 import toast from "react-hot-toast";
-import { db, auth } from "../firebase";
+import { db } from "../firebase";
 import {
   collection,
   getDocs,
   addDoc,
   deleteDoc,
   doc,
+  onSnapshot,
 } from "firebase/firestore";
-
-
 
 export const useCartStore = create((set, get) => ({
   cart: [],
+  unsubscribe: null,
 
-  fetchCart: async () => {
-    if (!auth.currentUser) {
-      return
-    }
-    try {
-      const querySnapshot = await getDocs(collection(db, "cart"));
-      const items = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      const uniqueItems = Array.from(
-        new Map(items.map((item) => [item.id, item])).values()
-      );
-      set({ cart: uniqueItems });
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to load cart");
-    }
+  getUserCartRef: (userId) => {
+    if (!userId) return null;
+    return collection(db, "users", userId, "cart");
   },
 
-  addToCart: async (product) => {
-    const existing = get().cart.find((item) => item.id === product.id);
-    if (existing) {
-      toast(`🛒 ${product.name} is already in the cart`);
+  fetchCart: async (userId) => {
+    if (!userId) {
+      set({ cart: [] });
       return;
     }
 
     try {
-      const docRef = await addDoc(collection(db, "cart"), product);
-      set((state) => ({
-        cart: [...state.cart, { id: docRef.id, ...product }],
+      const cartRef = get().getUserCartRef(userId);
+      if (!cartRef) return;
+
+      const querySnapshot = await getDocs(cartRef);
+      const items = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
       }));
-      toast.success(`🛒 ${product.name} added to cart`);
+      set({ cart: items });
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching cart:", error);
+      toast.error("Failed to load cart");
+    }
+  },
+
+  listenToCart: (userId) => {
+    if (!userId) {
+      set({ cart: [] });
+      return;
+    }
+
+    const unsubscribe = get().unsubscribe;
+    if (unsubscribe) {
+      unsubscribe();
+    }
+
+    try {
+      const cartRef = get().getUserCartRef(userId);
+      if (!cartRef) return;
+
+      const unsubscribeListener = onSnapshot(cartRef, (querySnapshot) => {
+        const items = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        set({ cart: items });
+      });
+
+      set({ unsubscribe: unsubscribeListener });
+    } catch (error) {
+      console.error("Error setting up cart listener:", error);
+      toast.error("Failed to sync cart");
+    }
+  },
+
+  stopListening: () => {
+    const unsubscribe = get().unsubscribe;
+    if (unsubscribe) {
+      unsubscribe();
+      set({ unsubscribe: null });
+    }
+  },
+
+  addToCart: async (product, userId) => {
+    if (!userId) {
+      toast.error("Please log in to add items to cart");
+      return;
+    }
+
+    const existing = get().cart.find((item) => item.productId === product.id);
+    if (existing) {
+      toast(`🛒 ${product.name || product.title} is already in the cart`);
+      return;
+    }
+
+    try {
+      const cartRef = get().getUserCartRef(userId);
+      if (!cartRef) return;
+
+      const cartItem = {
+        productId: product.id,
+        name: product.name || product.title,
+        price: product.price,
+        thumbnail: product.thumbnail,
+        img: product.img,
+        description: product.description,
+        addedAt: new Date().toISOString(),
+      };
+
+      const filteredCartItem = Object.fromEntries(
+        Object.entries(cartItem).filter(([, value]) => value !== undefined)
+      );
+
+      await addDoc(cartRef, filteredCartItem);
+      toast.success(`🛒 ${filteredCartItem.name} added to cart`);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
       toast.error("Failed to add product to cart");
     }
   },
 
-  removeFromCart: async (id) => {
+  removeFromCart: async (cartItemId, userId) => {
+    if (!userId) {
+      toast.error("Please log in to manage cart");
+      return;
+    }
+
     try {
-      await deleteDoc(doc(db, "cart", id));
-      set((state) => ({ cart: state.cart.filter((item) => item.id !== id) }));
+      const cartRef = get().getUserCartRef(userId);
+      if (!cartRef) return;
+
+      await deleteDoc(doc(cartRef, cartItemId));
       toast.success("🛒 Item removed from cart");
     } catch (error) {
-      console.error(error);
+      console.error("Error removing from cart:", error);
       toast.error("Failed to remove product");
     }
   },
 
-  clearCart: async () => {
+  clearCart: async (userId) => {
+    if (!userId) {
+      toast.error("Please log in to manage cart");
+      return;
+    }
+
     try {
       const cartItems = get().cart;
+      const cartRef = get().getUserCartRef(userId);
+      if (!cartRef) return;
+
       await Promise.all(
-        cartItems.map((item) => deleteDoc(doc(db, "cart", item.id)))
+        cartItems.map((item) => deleteDoc(doc(cartRef, item.id)))
       );
-      set({ cart: [] });
       toast.success("🛒 Cart cleared");
     } catch (error) {
-      console.error(error);
+      console.error("Error clearing cart:", error);
       toast.error("Failed to clear cart");
     }
   },
