@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
-import Breadcrumb from '../../Components/Shared/Breadcrumb/Breadcrumb';
-import { useCartStore } from '../../Store/useCartStore';
-import { useWishlistStore } from '../../Store/WishlistStore';
-import { useAuthStore } from '../../Store/useAuthStore';
-import toast from 'react-hot-toast';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase";
+import Breadcrumb from "../../Components/Shared/Breadcrumb/Breadcrumb";
+import { useCartStore } from "../../Store/useCartStore";
+import { useWishlistStore } from "../../Store/WishlistStore";
+import { useAuthStore } from "../../Store/useAuthStore";
+import toast from "react-hot-toast";
 
 export default function SingleProduct() {
   const { id } = useParams();
@@ -22,16 +22,16 @@ export default function SingleProduct() {
   useEffect(() => {
     const getProduct = async () => {
       try {
-        const docRef = doc(db, 'products', id);
+        const docRef = doc(db, "products", id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
           setProduct({ id: docSnap.id, ...docSnap.data() });
         } else {
-          console.log('No such document!');
+          console.log("No such document!");
         }
       } catch (error) {
-        console.error('Error fetching product:', error);
+        console.error("Error fetching product:", error);
       } finally {
         setLoading(false);
       }
@@ -42,7 +42,7 @@ export default function SingleProduct() {
 
   const handleCart = () => {
     if (!user?.uid) {
-      toast.error('Please log in to add items to cart');
+      toast.error("Please log in to add items to cart");
       return;
     }
 
@@ -57,41 +57,43 @@ export default function SingleProduct() {
   };
 
   const handleAddToWishlist = () => {
+    const wishListItem = wishlist.find((item) => item.productId === product.id);
+
     if (inWishlist) {
-      removeFromWishlist(product.id);
+      removeFromWishlist(wishListItem.id, user.uid);
     } else {
-      addToWishlist(product);
+      addToWishlist(product, user.uid);
     }
   };
 
-  if (loading) return <h2 className='text-center my-5'>Loading...</h2>;
+  if (loading) return <h2 className="text-center my-5">Loading...</h2>;
 
-  if (!product) return <h2 className='text-center my-5'>Product not found</h2>;
+  if (!product) return <h2 className="text-center my-5">Product not found</h2>;
 
   return (
     <>
-      <div className='container text-black position-absolute top-100'>
+      <div className="container text-black position-absolute top-100">
         <Breadcrumb
           title={product.title}
           breadcrumb={[
-            { label: 'Home', link: '/' },
-            { label: 'Products', link: '/products' },
+            { label: "Home", link: "/" },
+            { label: "Products", link: "/products" },
             { label: product.title },
           ]}
         />
       </div>
-      <div className='container py-5'>
-        <div className='row g-4 align-items-center my-5 py-5'>
-          <div className='col-md-6 text-center'>
+      <div className="container py-5">
+        <div className="row g-4 align-items-center my-5 py-5">
+          <div className="col-md-6 text-center">
             <img
               src={product.thumbnail}
               alt={product.title}
-              className='img-fluid rounded'
+              className="img-fluid rounded"
             />
           </div>
-          <div className='col-md-6'>
+          <div className="col-md-6">
             <h2>{product.title}</h2>
-            <p className='text-muted'>{product.description}</p>
+            <p className="text-muted">{product.description}</p>
             <h4>${product.price}</h4>
             <p>
               <strong>Brand:</strong> {product.brand}
@@ -102,23 +104,23 @@ export default function SingleProduct() {
             <p>
               <strong>Rating:</strong> ⭐ {product.rating}
             </p>
-            <div className='d-flex gap-2'>
+            <div className="d-flex gap-2">
               <button
                 className={`btn btn-sm btn-outline-dark rounded-0 ${
-                  inCart ? 'active' : ''
+                  inCart ? "active" : ""
                 }`}
                 onClick={handleCart}
               >
-                {inCart ? 'Remove from Cart' : 'Add to Cart'}
+                {inCart ? "Remove from Cart" : "Add to Cart"}
               </button>
 
               <button
                 className={`btn btn-sm btn-outline-dark rounded-0 ${
-                  inWishlist ? 'active' : ''
+                  inWishlist ? "active" : ""
                 }`}
                 onClick={handleAddToWishlist}
               >
-                {inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                {inWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
               </button>
             </div>
           </div>

@@ -3,7 +3,6 @@ import toast from "react-hot-toast";
 import { db } from "../firebase";
 import {
   collection,
-  getDocs,
   addDoc,
   deleteDoc,
   doc,
@@ -18,29 +17,6 @@ export const useCartStore = create((set, get) => ({
     if (!userId) return null;
     return collection(db, "users", userId, "cart");
   },
-
-  fetchCart: async (userId) => {
-    if (!userId) {
-      set({ cart: [] });
-      return;
-    }
-
-    try {
-      const cartRef = get().getUserCartRef(userId);
-      if (!cartRef) return;
-
-      const querySnapshot = await getDocs(cartRef);
-      const items = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      set({ cart: items });
-    } catch (error) {
-      console.error("Error fetching cart:", error);
-      toast.error("Failed to load cart");
-    }
-  },
-
   listenToCart: (userId) => {
     if (!userId) {
       set({ cart: [] });
@@ -75,7 +51,7 @@ export const useCartStore = create((set, get) => ({
     const unsubscribe = get().unsubscribe;
     if (unsubscribe) {
       unsubscribe();
-      set({ unsubscribe: null });
+      set({ unsubscribe: null, cart: [] });
     }
   },
 

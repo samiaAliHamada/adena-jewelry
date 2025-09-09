@@ -1,13 +1,10 @@
-import { useEffect } from "react";
 import { FaTrash } from "react-icons/fa";
 import { useWishlistStore } from "../../Store/WishlistStore.js";
+import { useAuthStore } from "../../Store/useAuthStore.js";
 
 export default function WishList() {
-  const { wishlist, fetchWishlist, removeFromWishlist } = useWishlistStore();
-
-  useEffect(() => {
-    fetchWishlist();
-  }, [fetchWishlist]);
+  const { wishlist, removeFromWishlist } = useWishlistStore();
+  const { user } = useAuthStore();
 
   if (wishlist.length === 0) {
     return (
@@ -16,6 +13,10 @@ export default function WishList() {
       </div>
     );
   }
+
+  const handleRemoveFromWishlist = (product) => {
+    removeFromWishlist(product.id, user.uid);
+  };
 
   return (
     <div className="container my-5 py-5">
@@ -35,7 +36,7 @@ export default function WishList() {
                 <p className="card-text text-muted">{item.description}</p>
                 <button
                   className="btn btn-outline-danger mt-auto"
-                  onClick={() => removeFromWishlist(item.id)}
+                  onClick={() => handleRemoveFromWishlist(item)}
                 >
                   <FaTrash className="me-2" /> Remove
                 </button>

@@ -51,6 +51,7 @@ export const useAuthStore = create((set) => ({
   logout: async () => {
     await signOut(auth);
     set({ user: null });
+    // document.location.reload();
   },
 
   listenToAuth: () => {

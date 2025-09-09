@@ -1,62 +1,138 @@
 import { create } from "zustand";
+import toast from "react-hot-toast";
 import { db } from "../firebase";
 import {
   collection,
   addDoc,
   deleteDoc,
   doc,
-  getDocs,
+  onSnapshot,
 } from "firebase/firestore";
 
 const LOCAL_KEY = "wishlist";
 
 export const useWishlistStore = create((set, get) => ({
   wishlist: [],
+  unsubscribe: null,
 
-  fetchWishlist: async () => {
+  getUserWishlistRef: (userId) => {
+    if (!userId) return null;
+    return collection(db, "users", userId, LOCAL_KEY);
+  },
+  listenToWishlist: (userId) => {
+    if (!userId) {
+      set({ wishlist: [] });
+      return;
+    }
+
+    const unsubscribe = get().unsubscribe;
+    if (unsubscribe) {
+      unsubscribe();
+    }
+
     try {
-      const localData = JSON.parse(localStorage.getItem(LOCAL_KEY)) || [];
-      set({ wishlist: localData });
+      const wishlistRef = get().getUserWishlistRef(userId);
+      if (!wishlistRef) return;
 
-      const querySnapshot = await getDocs(collection(db, "wishlist"));
-      const items = querySnapshot.docs.map((docSnap) => ({
-        id: docSnap.id,
-        ...docSnap.data(),
-      }));
+      const unsubscribeListener = onSnapshot(wishlistRef, (querySnapshot) => {
+        const items = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        set({ wishlist: items });
+      });
 
-      set({ wishlist: items });
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(items));
+      set({ unsubscribe: unsubscribeListener });
     } catch (error) {
-      console.error("Error fetching wishlist:", error);
+      console.error("Error setting up wishlist listener:", error);
+      toast.error("Failed to sync wishlist");
     }
   },
 
-  addToWishlist: async (product) => {
+  stopListening: () => {
+    const unsubscribe = get().unsubscribe;
+    if (unsubscribe) {
+      unsubscribe();
+      set({ unsubscribe: null, wishlist: [] });
+    }
+  },
+
+  addToWishlist: async (product, userId) => {
+    if (!userId) {
+      toast.error("Please log in to add items to wishlist");
+      return;
+    }
+
+    const existing = get().wishlist.find(
+      (item) => item.productId === product.id
+    );
+    if (existing) {
+      toast(`🛒 ${product.name || product.title} is already in the wishlist`);
+      return;
+    }
+
     try {
-      // Firestore
-      const docRef = await addDoc(collection(db, "wishlist"), product);
+      const wishlistRef = get().getUserWishlistRef(userId);
+      if (!wishlistRef) return;
 
-      const newItem = { id: docRef.id, ...product };
-      const updatedWishlist = [...get().wishlist, newItem];
+      const wishlistItem = {
+        productId: product.id,
+        name: product.name || product.title,
+        price: product.price,
+        thumbnail: product.thumbnail,
+        img: product.img,
+        description: product.description,
+        addedAt: new Date().toISOString(),
+      };
 
-      set({ wishlist: updatedWishlist });
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(updatedWishlist));
+      const filteredWishlistItem = Object.fromEntries(
+        Object.entries(wishlistItem).filter(([, value]) => value !== undefined)
+      );
+
+      await addDoc(wishlistRef, filteredWishlistItem);
+      toast.success(`🛒 ${filteredWishlistItem.name} added to wishlist`);
     } catch (error) {
       console.error("Error adding to wishlist:", error);
+      toast.error("Failed to add product to wishlist");
     }
   },
 
-  removeFromWishlist: async (id) => {
+  removeFromWishlist: async (wishlistItemId, userId) => {
+    if (!userId) {
+      toast.error("Please log in to manage wishlist");
+      return;
+    }
+
     try {
-      // Firestore
-      await deleteDoc(doc(db, "wishlist", id));
+      const wishlistRef = get().getUserWishlistRef(userId);
+      if (!wishlistRef) return;
 
-      const updatedWishlist = get().wishlist.filter((item) => item.id !== id);
-
-      set({ wishlist: updatedWishlist });
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(updatedWishlist));
+      await deleteDoc(doc(wishlistRef, wishlistItemId));
+      toast.success("🛒 Item removed from wishlist");
     } catch (error) {
       console.error("Error removing from wishlist:", error);
+      toast.error("Failed to remove product");
+    }
+  },
+
+  clearWishlist: async (userId) => {
+    if (!userId) {
+      toast.error("Please log in to manage wishlist");
+      return;
+    }
+
+    try {
+      const wishlistItems = get().wishlist;
+      const wishlistRef = get().getUserWishlistRef(userId);
+      if (!wishlistRef) return;
+
+      await Promise.all(
+        wishlistItems.map((item) => deleteDoc(doc(wishlistRef, item.id)))
+      );
+      toast.success("🛒 wishlist cleared");
+    } catch (error) {
+      console.error("Error clearing wishlist:", error);
+      toast.error("Failed to clear wishlist");
     }
   },
 }));
