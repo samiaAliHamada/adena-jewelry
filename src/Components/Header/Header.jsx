@@ -102,24 +102,25 @@ export default function Header() {
           </div>
 
           <div className="d-flex align-items-center justify-content-center gap-4">
-            <Link to="/wishlist" className="text-dark position-relative">
-              <FaRegHeart size={20} />
-              {wishlist.length > 0 && (
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  {wishlist.length}
-                </span>
-              )}
-            </Link>
-
+            <button className="btn position-relative">
+              <Link to="/wishlist" className="text-dark">
+                <FaRegHeart size={22} />
+                {wishlist.length > 0 && (
+                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {wishlist.length}
+                  </span>
+                )}
+              </Link>
+            </button>
             <button
               className="btn position-relative"
               type="button"
               onClick={() => setIsCartOpen(true)}
               aria-controls="offcanvasCart"
             >
-              <SlBag size={20} />
+              <SlBag size={22} />
               {cart.length > 0 && (
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                <span className="position-absolute top-0  start-100 translate-middle badge rounded-pill bg-danger">
                   {cart.length}
                 </span>
               )}

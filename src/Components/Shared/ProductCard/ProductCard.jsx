@@ -45,6 +45,7 @@ export default function ProductCard({ product }) {
     <div className="product_card card h-100 position-relative">
       <div className="position-relative">
         <img
+          height={500}
           src={product.thumbnail}
           className="card-img-top"
           alt={product.title}
@@ -77,7 +78,7 @@ export default function ProductCard({ product }) {
                 to={`/singleproduct/${product.id}`}
                 className="text-white text-decoration-none"
               >
-                Quick View
+                View Product
               </Link>
             </div>
           </div>

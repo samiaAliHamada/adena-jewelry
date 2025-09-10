@@ -89,10 +89,11 @@ export default function CartSidebar({ isOpen, onClose }) {
                         alt={item.title}
                         width="150"
                         height="150"
-                        className="rounded"
+                        className="rounded img-fluid"
                       />
+
                       <div>
-                        <strong>{item.title}</strong>
+                        <strong>{item.title || item.name}</strong>
                         <br />
                         <small>${item.price}</small>
                       </div>
@@ -106,14 +107,18 @@ export default function CartSidebar({ isOpen, onClose }) {
                   </li>
                 ))}
               </ul>
-              <button className="btn btn-dark w-100 mt-3" onClick={handleClear}>
-                Checkout
-              </button>
+              <div className="d-flex align-items-center justify-content-center gap-3 py-4">
+                <button
+                  className="btn text-white btn-danger"
+                  onClick={handleClear}
+                >
+                  Clear Cart
+                </button>
+                <button className="btn btn-dark">Checkout</button>
+              </div>
             </>
           ) : (
-            <div className="text-center">
-              <h5>Your cart is empty 🛒 </h5>
-            </div>
+            <h5 className="text-center">Your cart is empty 🛒</h5>
           )}
         </div>
       </div>

@@ -7,7 +7,6 @@ import { useCartStore } from "../../Store/useCartStore";
 import { useWishlistStore } from "../../Store/WishlistStore";
 import { useAuthStore } from "../../Store/useAuthStore";
 import toast from "react-hot-toast";
-
 export default function SingleProduct() {
   const { id } = useParams();
   const { addToCart, removeFromCart, cart } = useCartStore();
@@ -17,7 +16,7 @@ export default function SingleProduct() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const inCart = cart.some((item) => item?.productId === product?.id);
-  const inWishlist = wishlist.some((item) => item?.id === product?.id);
+  const inWishlist = wishlist.some((item) => item?.productId === product?.id);
 
   useEffect(() => {
     const getProduct = async () => {
