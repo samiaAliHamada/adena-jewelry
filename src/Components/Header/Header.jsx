@@ -1,4 +1,3 @@
-// src/Components/Shared/Header/Header.jsx
 import { useEffect, useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { FaRegHeart } from "react-icons/fa6";
@@ -37,7 +36,6 @@ export default function Header() {
         }`}
       >
         <div className="container-fluid align-items-center">
-          {/* 🔹 Toggler Button */}
           <button
             className="navbar-toggler border-0"
             type="button"
@@ -50,7 +48,6 @@ export default function Header() {
             <span className="navbar-toggler-icon"></span>
           </button>
 
-          {/* 🔹 Brand Logo */}
           <a className="navbar-brand" href="/">
             <img
               src="/logo-white.png"
@@ -59,7 +56,6 @@ export default function Header() {
             />
           </a>
 
-          {/* 🔹 Navbar Links */}
           <div className="collapse navbar-collapse pt-2" id="navbarScroll">
             <ul className="navbar-nav m-auto my-2 my-lg-0 navbar-nav-scroll gap-4">
               <li className="nav-item">
@@ -105,7 +101,6 @@ export default function Header() {
             </ul>
           </div>
 
-          {/* 🔹 Right Side Icons */}
           <div className="d-flex align-items-center justify-content-center gap-4">
             <Link to="/wishlist" className="text-dark position-relative">
               <FaRegHeart size={20} />
@@ -132,7 +127,6 @@ export default function Header() {
 
             {user ? (
               <div className="d-flex align-items-center gap-2">
-                {/* <span>{user.displayName || user.email}</span> */}
                 <button
                   onClick={logout}
                   className="btn btn-sm btn-outline-dark rounded-0"

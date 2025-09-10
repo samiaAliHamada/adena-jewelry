@@ -1,21 +1,17 @@
 import { Link } from "react-router-dom";
 import { FaRegHeart } from "react-icons/fa6";
 import { SlBag } from "react-icons/sl";
-import toast from "react-hot-toast";
-
+import { showError } from "../../../ToastMessages.js";
 import { useCartStore } from "../../../Store/useCartStore.js";
-
 import { useAuthStore } from "../../../Store/useAuthStore";
-
-import "./ProductCard.css";
 import { useWishlistStore } from "../../../Store/WishlistStore.js";
+import "./ProductCard.css";
 
 export default function ProductCard({ product }) {
   const { addToCart, removeFromCart, cart } = useCartStore();
   const { addToWishlist, removeFromWishlist, wishlist } = useWishlistStore();
   const { user } = useAuthStore();
 
-  // check if product is in cart (using productId instead of id)
   const inCart = cart.some((item) => item?.productId === product?.id);
   const inWishlist = wishlist.some((item) => item?.productId === product?.id);
 
@@ -29,10 +25,9 @@ export default function ProductCard({ product }) {
     }
   };
 
-  // cart handler
   const handleCart = () => {
     if (!user?.uid) {
-      toast.error("Please log in to add items to cart");
+      showError("Please log in to add items to cart");
       return;
     }
 
@@ -57,7 +52,6 @@ export default function ProductCard({ product }) {
 
         <div className="icon_overlay w-100 h-100 position-absolute">
           <div className="icons d-flex align-items-center justify-content-center w-100 h-100 gap-4">
-            {/* Wishlist */}
             <div className="p-2 bg-light rounded-circle">
               <FaRegHeart
                 size={20}
@@ -67,7 +61,6 @@ export default function ProductCard({ product }) {
               />
             </div>
 
-            {/* Cart */}
             <div className="p-2 bg-light rounded-circle">
               <SlBag
                 size={20}
@@ -78,7 +71,6 @@ export default function ProductCard({ product }) {
             </div>
           </div>
 
-          {/* Quick View */}
           <div className="d-flex align-items-center justify-content-center">
             <div className="view_btn position-absolute btn rounded-0 w-100 bg-black">
               <Link
@@ -92,7 +84,6 @@ export default function ProductCard({ product }) {
         </div>
       </div>
 
-      {/* Card Body */}
       <div className="card-body">
         <h6 className="card-title product_text">{product.title}</h6>
         <p className="card-text product_text">{product.description}</p>

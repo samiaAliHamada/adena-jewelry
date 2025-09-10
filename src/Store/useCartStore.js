@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import toast from "react-hot-toast";
 import { db } from "../firebase";
 import {
   collection,
@@ -9,6 +8,14 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 
+import {
+  showAddedToCart,
+  showRemovedFromCart,
+  showCartCleared,
+  showCartAlreadyExists,
+  showError,
+} from "../ToastMessages.js";
+
 export const useCartStore = create((set, get) => ({
   cart: [],
   unsubscribe: null,
@@ -17,6 +24,7 @@ export const useCartStore = create((set, get) => ({
     if (!userId) return null;
     return collection(db, "users", userId, "cart");
   },
+
   listenToCart: (userId) => {
     if (!userId) {
       set({ cart: [] });
@@ -43,7 +51,7 @@ export const useCartStore = create((set, get) => ({
       set({ unsubscribe: unsubscribeListener });
     } catch (error) {
       console.error("Error setting up cart listener:", error);
-      toast.error("Failed to sync cart");
+      showError("Failed to sync cart");
     }
   },
 
@@ -57,13 +65,13 @@ export const useCartStore = create((set, get) => ({
 
   addToCart: async (product, userId) => {
     if (!userId) {
-      toast.error("Please log in to add items to cart");
+      showError("Please log in to add items to cart");
       return;
     }
 
     const existing = get().cart.find((item) => item.productId === product.id);
     if (existing) {
-      toast(`🛒 ${product.name || product.title} is already in the cart`);
+      showCartAlreadyExists(product);
       return;
     }
 
@@ -73,7 +81,7 @@ export const useCartStore = create((set, get) => ({
 
       const cartItem = {
         productId: product.id,
-        name: product.name || product.title,
+        title: product.title,
         price: product.price,
         thumbnail: product.thumbnail,
         img: product.img,
@@ -86,16 +94,16 @@ export const useCartStore = create((set, get) => ({
       );
 
       await addDoc(cartRef, filteredCartItem);
-      toast.success(`🛒 ${filteredCartItem.name} added to cart`);
+      showAddedToCart(filteredCartItem);
     } catch (error) {
       console.error("Error adding to cart:", error);
-      toast.error("Failed to add product to cart");
+      showError("Failed to add product to cart");
     }
   },
 
   removeFromCart: async (cartItemId, userId) => {
     if (!userId) {
-      toast.error("Please log in to manage cart");
+      showError("Please log in to manage cart");
       return;
     }
 
@@ -103,17 +111,21 @@ export const useCartStore = create((set, get) => ({
       const cartRef = get().getUserCartRef(userId);
       if (!cartRef) return;
 
+      const product = get().cart.find((item) => item.id === cartItemId);
+
       await deleteDoc(doc(cartRef, cartItemId));
-      toast.success("🛒 Item removed from cart");
+      if (product) {
+        showRemovedFromCart(product);
+      }
     } catch (error) {
       console.error("Error removing from cart:", error);
-      toast.error("Failed to remove product");
+      showError("Failed to remove product");
     }
   },
 
   clearCart: async (userId) => {
     if (!userId) {
-      toast.error("Please log in to manage cart");
+      showError("Please log in to manage cart");
       return;
     }
 
@@ -125,10 +137,10 @@ export const useCartStore = create((set, get) => ({
       await Promise.all(
         cartItems.map((item) => deleteDoc(doc(cartRef, item.id)))
       );
-      toast.success("🛒 Cart cleared");
+      showCartCleared();
     } catch (error) {
       console.error("Error clearing cart:", error);
-      toast.error("Failed to clear cart");
+      showError("Failed to clear cart");
     }
   },
 }));

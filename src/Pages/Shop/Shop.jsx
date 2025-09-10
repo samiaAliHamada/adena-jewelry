@@ -1,34 +1,28 @@
-import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../firebase";
-
+import { useEffect } from "react";
+import { useProductStore } from "../../Store/useProductStore";
 import ProductCard from "../../Components/Shared/ProductCard/ProductCard";
 import MainBanner from "../../Components/Shared/MainBanner/MainBanner";
 
 export default function Shop() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    categories,
+    loading,
+    error,
+    search,
+    filter,
+    sort,
+    fetchProducts,
+    setSearch,
+    setFilter,
+    setSort,
+    getFilteredProducts,
+  } = useProductStore();
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        const productsCol = collection(db, "products");
-        const snapshot = await getDocs(productsCol);
-        const data = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setProducts(data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProducts();
-  }, []);
+  }, [fetchProducts]);
+
+  const filteredProducts = getFilteredProducts();
 
   return (
     <>
@@ -39,15 +33,54 @@ export default function Shop() {
       />
 
       <div className="container py-5">
+        <div className="row mb-4">
+          <div className="col-md-4 mb-2">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search products..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="col-md-4 mb-2">
+            <select
+              className="form-select"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            >
+              <option value="all">All Categories</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-md-4 mb-2">
+            <select
+              className="form-select"
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+            >
+              <option value="none">Sort by</option>
+              <option value="asc">Price: Low to High</option>
+              <option value="desc">Price: High to Low</option>
+            </select>
+          </div>
+        </div>
+
         {loading ? (
           <div className="text-center py-5">
             <div className="spinner-border text-dark" role="status" />
           </div>
-        ) : products.length === 0 ? (
+        ) : error ? (
+          <div className="text-center text-danger py-5">{error}</div>
+        ) : filteredProducts.length === 0 ? (
           <div className="text-center text-muted py-5">No products found.</div>
         ) : (
           <div className="row g-4">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <div className="col-md-4" key={product.id}>
                 <ProductCard product={product} />
               </div>

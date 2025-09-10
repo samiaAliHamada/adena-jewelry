@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import toast from "react-hot-toast";
 import { db } from "../firebase";
 import {
   collection,
@@ -8,6 +7,12 @@ import {
   doc,
   onSnapshot,
 } from "firebase/firestore";
+
+import {
+  showAddedToWishlist,
+  showRemovedFromWishlist,
+  showError,
+} from "../ToastMessages.js";
 
 const LOCAL_KEY = "wishlist";
 
@@ -19,6 +24,7 @@ export const useWishlistStore = create((set, get) => ({
     if (!userId) return null;
     return collection(db, "users", userId, LOCAL_KEY);
   },
+
   listenToWishlist: (userId) => {
     if (!userId) {
       set({ wishlist: [] });
@@ -45,7 +51,7 @@ export const useWishlistStore = create((set, get) => ({
       set({ unsubscribe: unsubscribeListener });
     } catch (error) {
       console.error("Error setting up wishlist listener:", error);
-      toast.error("Failed to sync wishlist");
+      showError("Failed to sync wishlist");
     }
   },
 
@@ -59,7 +65,7 @@ export const useWishlistStore = create((set, get) => ({
 
   addToWishlist: async (product, userId) => {
     if (!userId) {
-      toast.error("Please log in to add items to wishlist");
+      showError("Please log in to add items to wishlist");
       return;
     }
 
@@ -67,7 +73,7 @@ export const useWishlistStore = create((set, get) => ({
       (item) => item.productId === product.id
     );
     if (existing) {
-      toast(`🛒 ${product.name || product.title} is already in the wishlist`);
+      showError(`${product.title} is already in the wishlist`);
       return;
     }
 
@@ -77,7 +83,7 @@ export const useWishlistStore = create((set, get) => ({
 
       const wishlistItem = {
         productId: product.id,
-        name: product.name || product.title,
+        title: product.title,
         price: product.price,
         thumbnail: product.thumbnail,
         img: product.img,
@@ -90,16 +96,16 @@ export const useWishlistStore = create((set, get) => ({
       );
 
       await addDoc(wishlistRef, filteredWishlistItem);
-      toast.success(`🛒 ${filteredWishlistItem.name} added to wishlist`);
+      showAddedToWishlist(filteredWishlistItem);
     } catch (error) {
       console.error("Error adding to wishlist:", error);
-      toast.error("Failed to add product to wishlist");
+      showError("Failed to add product to wishlist");
     }
   },
 
   removeFromWishlist: async (wishlistItemId, userId) => {
     if (!userId) {
-      toast.error("Please log in to manage wishlist");
+      showError("Please log in to manage wishlist");
       return;
     }
 
@@ -107,17 +113,21 @@ export const useWishlistStore = create((set, get) => ({
       const wishlistRef = get().getUserWishlistRef(userId);
       if (!wishlistRef) return;
 
+      const product = get().wishlist.find((item) => item.id === wishlistItemId);
+
       await deleteDoc(doc(wishlistRef, wishlistItemId));
-      toast.success("🛒 Item removed from wishlist");
+      if (product) {
+        showRemovedFromWishlist(product);
+      }
     } catch (error) {
       console.error("Error removing from wishlist:", error);
-      toast.error("Failed to remove product");
+      showError("Failed to remove product");
     }
   },
 
   clearWishlist: async (userId) => {
     if (!userId) {
-      toast.error("Please log in to manage wishlist");
+      showError("Please log in to manage wishlist");
       return;
     }
 
@@ -129,10 +139,10 @@ export const useWishlistStore = create((set, get) => ({
       await Promise.all(
         wishlistItems.map((item) => deleteDoc(doc(wishlistRef, item.id)))
       );
-      toast.success("🛒 wishlist cleared");
+      showRemovedFromWishlist({ title: "All items" }); // عشان يدي feedback واضح
     } catch (error) {
       console.error("Error clearing wishlist:", error);
-      toast.error("Failed to clear wishlist");
+      showError("Failed to clear wishlist");
     }
   },
 }));
