@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { FaFacebookF, FaWhatsapp } from "react-icons/fa";
 import { FaXTwitter, FaTiktok } from "react-icons/fa6";
-
+import { useAuthStore } from "../../Store/useAuthStore.js";
 import "./Footer.css";
 
 export default function Footer() {
+  const { user, logout } = useAuthStore();
   return (
     <footer className="py-4 bg-black text-white text-center mt-5">
       <div className="container-fluid">
@@ -124,14 +125,20 @@ export default function Footer() {
                 className="footer_email form-control bg-black text-white border-0 border-bottom rounded-0 mb-2"
                 required
               />
-              <Link to="/register">
+              {user ? (
                 <button
-                  type="submit"
+                  onClick={logout}
                   className="signup_btn btn px-4 py-2 rounded-0"
                 >
-                  SIGN UP
+                  LOGOUT
                 </button>
-              </Link>
+              ) : (
+                <Link to="/register">
+                  <button className="signup_btn btn px-4 py-2 rounded-0">
+                    SIGN UP
+                  </button>
+                </Link>
+              )}
             </div>
           </div>
         </div>

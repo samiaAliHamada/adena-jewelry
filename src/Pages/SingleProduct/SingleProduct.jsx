@@ -71,12 +71,12 @@ export default function SingleProduct() {
 
   return (
     <>
-      <div className="container text-black position-absolute top-100">
+      <div className="container position-absolute top-0">
         <Breadcrumb
           title={product.title}
           breadcrumb={[
             { label: "Home", link: "/" },
-            { label: "Products", link: "/products" },
+            { label: "Products", link: "/Shop" },
             { label: product.title },
           ]}
         />
@@ -99,9 +99,6 @@ export default function SingleProduct() {
             </p>
             <p>
               <strong>Category:</strong> {product.category}
-            </p>
-            <p>
-              <strong>Rating:</strong> ⭐ {product.rating}
             </p>
             <div className="d-flex gap-2">
               <button

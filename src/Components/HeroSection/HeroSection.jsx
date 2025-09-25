@@ -54,7 +54,7 @@ export default function HeroSection() {
       <div className="container">
         <div className="row g-4 py-5">
           {features.map((item, idx) => (
-            <div key={idx} className="col-lg-3 col-md-6">
+            <div key={idx} className="col-lg-3 col-md-12">
               <div className="d-flex align-items-center justify-content-start gap-3">
                 <div>{item.icon}</div>
                 <div>

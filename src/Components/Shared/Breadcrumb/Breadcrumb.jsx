@@ -1,29 +1,41 @@
 import { Link } from "react-router-dom";
-import "./Breadcrumb.css";
+import styles from "./Breadcrumb.module.css";
 
-export default function Breadcrumb({ title, breadcrumb }) {
+export default function Breadcrumb({ title, breadcrumb, customClass }) {
   return (
-    <div className="breadcrumb_container position-absolute text-white text-end bottom-0 end-0 p-5">
-      <h1>{title}</h1>
+    <div
+      className={`d-flex flex-column position-relative ${
+        customClass ? styles.breadcrumbAbout : ""
+      }`}
+      style={{ top: customClass ? "0" : "70px" }}
+    >
+      <h3 className="mb-2">{title}</h3>
       <nav aria-label="breadcrumb">
-        <ol className="breadcrumb justify-content-end mb-0">
+        <ol className="breadcrumb opacity-75">
           {breadcrumb.map((item, index) => (
             <li
               key={index}
               className={`breadcrumb-item ${
-                index === breadcrumb.length - 1 ? "active" : ""
+                index === breadcrumb.length - 1 ? "active fw-bold" : ""
               }`}
-              aria-current={index === breadcrumb.length - 1 ? "page" : null}
+              aria-current={
+                index === breadcrumb.length - 1 ? "page" : undefined
+              }
             >
               {item.link ? (
                 <Link
                   to={item.link}
-                  className="text-white text-decoration-none"
+                  className={`text-decoration-none ${
+                    customClass ? "text-white" : "text-dark"
+                  }`}
+                  style={{ color: customClass ? "#fff" : undefined }}
                 >
                   {item.label}
                 </Link>
               ) : (
-                <span className="text-white">{item.label}</span>
+                <span className={customClass ? "text-white" : ""}>
+                  {item.label}
+                </span>
               )}
             </li>
           ))}
